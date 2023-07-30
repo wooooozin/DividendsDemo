@@ -30,14 +30,6 @@ public class FinanceService {
         List< DividendEntity> dividendEntities = this.dividendRepository.findAllByCompanyId(company.getId());
 
         // 결과 반환
-//        List<Dividend> dividends = new ArrayList<>();
-//        for (var entity : dividends) {
-//            dividends.add(Dividend.builder()
-//                            .date(entity.getDate())
-//                            .dividend(entity.getDividend())
-//                            .build());
-//        }
-
         List<Dividend> dividends = dividendEntities.stream()
                 .map(e -> Dividend.builder()
                         .date(e.getDate())
