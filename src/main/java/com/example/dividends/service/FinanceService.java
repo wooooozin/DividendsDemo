@@ -3,6 +3,7 @@ package com.example.dividends.service;
 import com.example.dividends.model.Company;
 import com.example.dividends.model.Dividend;
 import com.example.dividends.model.ScrapedResult;
+import com.example.dividends.model.contstants.CacheKey;
 import com.example.dividends.persist.CompanyRepository;
 import com.example.dividends.persist.DividendRepository;
 import com.example.dividends.persist.entity.CompanyEntity;
@@ -25,7 +26,7 @@ public class FinanceService {
 
     // 요청이 자주 들어오는가?
     // 자주 변경되는 데이터 인가?
-    @Cacheable(key = "#companyName", value = "finance")
+    @Cacheable(key = "#companyName", value = CacheKey.KEY_FINANCE)
     public ScrapedResult getDividendByCompanyName(String companyName) {
         log.info("search company -> " + companyName);
         // 회사 명 기준으로 회사 정보를 조회
