@@ -33,6 +33,7 @@ out/
 /nbdist/
 /.nb-gradle/
 myLog.log
+myLog-*.log.gz
 
 ### VS Code ###
 .vscode/
