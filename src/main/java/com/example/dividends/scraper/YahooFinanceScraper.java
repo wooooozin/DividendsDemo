@@ -1,5 +1,6 @@
 package com.example.dividends.scraper;
 
+import com.example.dividends.exception.impl.NoCompanyException;
 import com.example.dividends.model.Company;
 import com.example.dividends.model.Dividend;
 import com.example.dividends.model.ScrapedResult;
@@ -69,8 +70,12 @@ public class YahooFinanceScraper implements Scraper {
         String url = String.format(SUMMARY_URL, ticker, ticker);
         try {
             Document document = Jsoup.connect(url).get();
-            Element titleEle = document.getElementsByTag("h1").get(0);
-            String title = titleEle.text().split(" - ")[1].trim();
+            Elements titleEle = document.getElementsByTag("h1");
+            if (titleEle.size() == 0) {
+                throw new NoCompanyException();
+            }
+            Element element = titleEle.get(0);
+            String title = element.text().split(" - ")[1].trim();
 
             return new Company(ticker, title);
         } catch (IOException e) {

@@ -1,5 +1,7 @@
 package com.example.dividends.service;
 
+import com.example.dividends.exception.impl.AlreadyExistCompanyException;
+import com.example.dividends.exception.impl.NoCompanyException;
 import com.example.dividends.model.Company;
 import com.example.dividends.model.ScrapedResult;
 import com.example.dividends.persist.CompanyRepository;
@@ -30,7 +32,7 @@ public class CompanyService {
     public Company save(String ticker) {
         boolean exists = this.companyRepository.existsByTicker(ticker);
         if (exists) {
-            throw new RuntimeException("already exists ticker ->" + ticker);
+            throw new AlreadyExistCompanyException();
         }
         return this.storeCompanyAndDividend(ticker);
     }
@@ -83,7 +85,7 @@ public class CompanyService {
 
     public String deleteCompany(String ticker) {
         var company = this.companyRepository.findByTicker(ticker)
-                        .orElseThrow(() -> new RuntimeException("존재하지 않는 유저 입니다."));
+                        .orElseThrow(() -> new NoCompanyException());
         this.dividendRepository.deleteAllByCompanyId(company.getId());
         this.companyRepository.delete(company);
 
