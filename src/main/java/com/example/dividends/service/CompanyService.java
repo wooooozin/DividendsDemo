@@ -10,6 +10,7 @@ import com.example.dividends.persist.entity.CompanyEntity;
 import com.example.dividends.persist.entity.DividendEntity;
 import com.example.dividends.scraper.Scraper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.Trie;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class CompanyService {
@@ -45,11 +47,10 @@ public class CompanyService {
         // ticker 기준으로 회사를 스크래핑
         Company company = this.yahooFinanceScraper.scrapCompanyByTicker(ticker);
         if (ObjectUtils.isEmpty(company)) {
-            throw new RuntimeException("failed to scrap ticker -> " + ticker);
+            throw new NoCompanyException();
         }
         // 해당 회사가 존재할 경우, 회사의 배등 정보를 스크패링
         ScrapedResult scrapedResult = this.yahooFinanceScraper.scrap(company);
-
         // 스크래핑 결과
         CompanyEntity companyEntity = this.companyRepository.save(new CompanyEntity(company));
         List<DividendEntity> dividendEntityList = scrapedResult
@@ -85,12 +86,12 @@ public class CompanyService {
 
     public String deleteCompany(String ticker) {
         var company = this.companyRepository.findByTicker(ticker)
-                        .orElseThrow(() -> new NoCompanyException());
+                        .orElseThrow(NoCompanyException::new);
         this.dividendRepository.deleteAllByCompanyId(company.getId());
         this.companyRepository.delete(company);
 
         this.deleteAutocompleteKeyword(company.getName());
-
+        log.info("회사 정보 삭제 완료" + company.getName());
         return company.getName();
     }
 }
