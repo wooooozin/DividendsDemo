@@ -2,14 +2,12 @@ package com.example.dividends.web;
 
 import com.example.dividends.model.contstants.Auth;
 import com.example.dividends.security.TokenProvider;
+import com.example.dividends.service.CompanyService;
 import com.example.dividends.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController

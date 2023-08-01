@@ -1,9 +1,11 @@
 package com.example.dividends.web;
 
 import com.example.dividends.model.Company;
+import com.example.dividends.model.contstants.CacheKey;
 import com.example.dividends.persist.entity.CompanyEntity;
 import com.example.dividends.service.CompanyService;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class CompanyController {
 
     private final CompanyService companyService;
+    private final CacheManager cacheManager;
 
     @GetMapping("/autocomplete")
     public ResponseEntity<?> autocomplete(
@@ -47,8 +50,18 @@ public class CompanyController {
         return ResponseEntity.ok(company);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteCompany() {
-        return null;
+    @DeleteMapping("/{ticker}")
+    @PreAuthorize("hasRole('WRITE')")
+    public ResponseEntity<?> deleteCompany(
+            @PathVariable String ticker
+    ) {
+        String companyName = this.companyService.deleteCompany(ticker);
+        this.clearFinanceCache(companyName);
+        return ResponseEntity.ok(companyName);
     }
+
+    public void clearFinanceCache(String companyName) {
+        this.cacheManager.getCache(CacheKey.KEY_FINANCE).evict(companyName);
+    }
+
 }
